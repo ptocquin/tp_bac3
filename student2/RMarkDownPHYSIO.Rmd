@@ -1,0 +1,134 @@
+---
+title: "Physiologie végétale: Rôle de l'auxine dans le gravitropisme des tiges pour *Arabidopsis thaliana*"
+author: "Bakhti Amal, BBMC Bloc 0"
+date: "25 février 2016"
+output: pdf_document
+bibliography: Biblio.bib
+---
+#1. Introduction
+
+Le gravitropisme est un phénomène omniprésent chez les plantes. Celui-ci est observé depuis bien longtemps notamment par Charles Darwin qui avait observé que la croissance des plantes pouvait être influencée par la gravité [@whippo_phototropism:_2006]. 
+En effet, la croissance va se dérouler avec la gravité en tant que guide, ainsi, la pousse de la tige et des feuilles va pouvoir se faire de manière à ce que la photosynthèse et l’échange gazeux puissent être optimaux [@chen_gravitropism_1999]. La tige de la plante va donc pousser dans le sens contraire à la gravité.
+Darwin a su mettre en lumière que le phénomène serait dû a une substance qui se déplace depuis l’apex de la tige, vers les parties plus basses de la plante afin de répondre a un stimulus [@whippo_phototropism:_2006].
+
+Un acteur majeur dans le développement des plantes va être le transport de l’auxine. Cette hormone joue un rôle dans le gravitropisme ainsi que dans d’autres tropismes. Le transport de l’auxine à travers la plante se fait par l’intermédiaire de transporteurs membranaires tels que les protéines transportrices PIN. Le transport de l’auxine par ces protéines se fait de façon unidirectionnelle, du haut de la tige vers les racines [@finet_auxology:_2012]. L’auxine entre dans la cellule sous forme neutre par la face apicale de la cellule par simple diffusion. Arrivée dans le cytoplasme, l’hormone se retrouve sous forme anionique. La sortie de l’ion nécessite alors des transporteurs membranaires tels que PIN qui sont toujours au niveau de la face basale de la cellule. Ceci explique alors le transport polaire de l’auxine [@petrasek_phytotropins_2003].
+Des inhibiteurs spécifiques des protéines transportrices ont été caractérisées. On peut citer la NPA (1-N-naphthylphthalamic acid) qui est la plus communément utilisée. La NPA fait partie de la famille d’inhiteurs appelés phytotropines [@petrasek_phytotropins_2003]. La NPA inhibe le transport en se liant a une protéine membranaire. Ces sites de liaisons étant important pour le transport de l’auxine, il n’y a pas de compétition pour ce site de liaison au niveau de l’auxine [@jensen_auxin_1998].
+
+L’objectif de ce travail sera d’observer si le transport de l’auxine joue un rôle dans le phénomène de gravitropisme. Cette observations sera évaluée après avoir imposé une culture de plantes *Arabidopsis thaliana* en milieu contenant de la NPA ou non.
+
+
+#2. Matériel et méthodes
+
+Cette expérience a été réalisée sur des plantes Arabidopsis thaliana, de lignée rapportrice transgénique DR5-GFP. Ce gène rapporteur va émettre de la fluorescence  par l’intermédiaire de la GFP lorsqu’il y a présence d’auxine. 
+Les plantes utilisées lors de ce travail ont été semées dans une boîte de gelose MS cinq jours avant le début des manipulations et ont été conservées à l’obscurité. Quarante de ces plantes ont été transférées dans quatre boîtes de gelose MS dont deux contenaient une concentration en NPA de 10^-5^mol/L . Dix plantes ont été placées dans chaque boîte de culture. Il a fallu scanner les boîtes contenant les dix plantes afin d’avoir des images pré-traitement. Une fois cette étape réalisée, les boîtes ont été placées dans l’obscurité afin de ne pas imposer un phototropisme sur ces plantes qui aurait pu devenir un biais au niveau des résultats. Deux boîtes ont été placées à la verticale afin que les plantes soient dans le sens contraire à la gravité. Ces deux boîtes différaient au niveau de leur concentration en NPA, nulle pour la première et de 10^-5^mol/L pour la seconde. Les deux autres boîtes, avec et sans NPA, ont subi une rotation de +90° (vers la droite). Les plantes se retrouvaient alors perpendiculaires à la gravité.
+Après un traitement de vingt-quatre heures, les plantes ont de nouveau été scannées. Les résultats ont alors été calculés en mesurant les angles de courbure des plantes au niveau de leurs tiges, avant et après traitement. Cette étape a été réalisée au moyen du programme d’analyse d’image ImageJ. Afin de standardiser la méthode, la mesure a été faite en prenant l’angle en commencant au niveau de l’apex de la tige jusqu’au point de courbure. La longueur des deux segments restait toujours la même pour chaque mesure en veillant a garder le même niveau de zoom pour chaque plante et chaque image à analyser.
+
+
+#3. Résultats
+
+```{r tidy=TRUE, echo=FALSE}
+
+#Ouverture fichier csv
+
+gravitropisme1 <- read.csv("/Users/Ams/Desktop/Donneesgravitropisme - Copie.csv", sep=";")
+
+#Mise en place de donnees sur les angles de 0 a 90 degres car la prise de mesure nous donnait des angles entre 90 et 180 degres ce qui n'est pas clair pour le lecteur qui verra les donnees
+
+soustraction<-function(s){ abs(s-180) }
+
+anglejour0<-soustraction(gravitropisme1$Angle.Jour.0)
+
+anglejour1<-soustraction(gravitropisme1$Angle.Jour.1)
+
+gravitropisme<-cbind(gravitropisme1,anglejour0)
+
+gravitropisme<-cbind(gravitropisme,anglejour1)
+
+gravitropisme<-gravitropisme[,-2]
+
+gravitropisme<-gravitropisme[,-2]
+
+#Va nous donner le tableau contenant l'angles des plantes avec ou sans npa et position courbe ou debout
+
+avecdebout0<-gravitropisme[gravitropisme$NPA=="Avec" & gravitropisme$Position=="Debout",c("Plante","Position","anglejour0")]
+
+sanscouche0<-gravitropisme[gravitropisme$NPA=="Sans" & gravitropisme$Position=="Courbe",c("Plante","Position","anglejour0")]
+
+sansdebout0<-gravitropisme[gravitropisme$NPA=="Sans" & gravitropisme$Position=="Debout",c("Plante","Position","anglejour0")]
+
+aveccouche0<-gravitropisme[gravitropisme$NPA=="Avec" & gravitropisme$Position=="Courbe",c("Plante","Position","anglejour0")]
+
+avecdebout<-gravitropisme[gravitropisme$NPA=="Avec" & gravitropisme$Position=="Debout",c("Plante","Position","anglejour1")]
+
+sanscouche<-gravitropisme[gravitropisme$NPA=="Sans" & gravitropisme$Position=="Courbe",c("Plante","Position","anglejour1")]
+
+sansdebout<-gravitropisme[gravitropisme$NPA=="Sans" & gravitropisme$Position=="Debout",c("Plante","Position","anglejour1")]
+
+aveccouche1<-gravitropisme[gravitropisme$NPA=="Avec" & gravitropisme$Position=="Courbe",c("Plante","Position","anglejour1")]
+
+#Calcule des moyennes
+
+meanAvecDebout0<-sapply(avecdebout0["anglejour0"], mean)
+
+meanSansDebout0<- sapply(sansdebout0["anglejour0"], mean)
+
+meanAvecCouche0<-sapply(aveccouche0["anglejour0"], mean)
+
+meanSansCouche0<- sapply(sanscouche0["anglejour0"], mean)
+
+meanAvecDebout<-sapply(avecdebout["anglejour1"], mean)
+
+meanSansCouche<- sapply(sanscouche["anglejour1"], mean)
+
+meanSansDebout<- sapply(sansdebout["anglejour1"], mean)
+
+meanAvecCouche1<-sapply(aveccouche1["anglejour1"], mean)
+
+#Creation des vecteurs contenant les moyennes en J0 et J1 
+
+vec1 <- c(meanSansDebout0,meanSansDebout)
+
+vec2 <- c(meanSansCouche0,meanSansCouche)
+
+vec3 <- c(meanAvecCouche0,meanAvecCouche1)
+
+vec4 <- c(meanAvecDebout0,meanAvecDebout)
+
+
+#cbind des vecteurs pour avoir une matrice 2 lignes et 3 colonnes pour pouvoir accoler deux par deux les barres du barplot
+
+vec <- cbind(vec1,vec2,vec3,vec4)
+
+#Renommer les colonnes et lignes pour avoir deja une base pour le graphique
+
+colnames(vec)<- c("Sans NPA, Debout", "Sans NPA, Courbe", "Avec NPA, Courbe", "Avec NPA, Debout")
+
+rownames(vec)<- c("Jour 0", "Jour 1")
+
+#barplot avec couleurs, legende sur lignes et colonnes groupees (beside)
+
+barplot(vec, xlab="Conditions de Culture", ylab = "Angles (°)", col=c("pink1","lightblue1"), legend = rownames(vec), beside = TRUE, axisnames = FALSE)
+axis(side = 1, at = c(2,5,8,11),labels = colnames(vec), cex.axis=0.75)
+```
+
+__Figure 1__: **Graphique des angles en degrés en fonction des différentes conditions de culture d'*Arabidopsis thaliana* ** Le graphique représente les moyennes des angles en jour 0 (rose) et jour 1 (bleu) de la manipulation. Les boîtes contenant les plantes sont avec ou sans NPA, et ont subi une rotation de +90° (Courbe) ou sont restées à la verticale (Debout). La manipulation s'est déroulée dans l'obscurité a température ambiante.
+
+Le graphique obtenu (Figure 1) indique les angles en ordonnées et le traitement subi par le panel de plantes en abscisse. La valeur affichée au niveau des barres du barplot représente la moyenne des angles d'une population de plantes dans une même boîte.
+
+#4. Discussion et Conclusion
+
+En analysant le graphique des résultats obtenus, on remarque que lorsque les plantes qui sont restées à la verticales et dont le milieu de culture contenait de la NPA n'ont pas subi de courbure car la moyenne des angles en début et en fin de manipulation sont assez similaires. Lorsque les plantes sont restées à la verticale mais dans un milieu sans NPA, on remarque une légère différence entre le jour 0 et le jour 1, mais cette différence peut être due à la variabilité pouvant être liée à la prise de données lors du calcule des angles. Globalement, les résultats semblent indiquer que les plantes n'ont pas réellement subi de courbure, mais elle ne serait pas due au gravitropisme dans tous les cas car le stimulus n'a pas été appliqué sur cette série de plantes.
+
+Pour les plantes qui ont subi une rotation de +90°, on remarque qu'avec NPA la différence entre les angles en jour 0 et en jour 1 est plus marquée que sur les deux boîtes qui n'ont pas subi le stimulus gravitropique. Il se peut que malgré que la NPA bloque les transporteurs d'auxine, l'auxine en quantité très faible a tout de même réussi a répondre au stimulus gravitropique. Pour les plantes qui ont subi l'inclinaison de +90° et dont le milieu de culture ne contient pas de NPA, la différence entre les deux angles est indéniable. Clairement, le stimulus gravitropique a conduit à une réponse plus marquée que dans les trois autres situations.
+
+Ces résultats permettent d'affirmer que le transport de l'auxine a un rôle essentiel pour la réponse aux stimuli gravitropiques au niveau des tiges. On peut aussi penser que le NPA ne bloque peut être pas tous les canaux qui permettent de transporter l'auxine par l'observation d'une variabilité entre les angles en jour 0 et jour 1.
+
+
+#Annexe
+__Tableau de données__
+```{r, echo=FALSE}
+gravitropisme
+```
+
+
+#Références

@@ -1,0 +1,174 @@
+---
+title: "Untitled"
+author: "Pierre Tocquin"
+date: "10 mars 2016"
+output:
+  pdf_document: default
+  word_document: default
+bibliography: biblio_TP-1.bib
+---
+
+```{r libraries, echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+# Chargement d'une librairie pour la production de graphiques`
+# install.packages("ggplot2")
+library(ggplot2)
+```
+
+# Introduction
+
+L'introduction contient les éléments, étayés par la littératures scientifiques, qui supportent la ou les hypothèses que vous allez évaluer par votre expérimentation. A ce titre, toute information doit être reliée à sa source, c'est à dire à une référence bibliographique.
+
+Ceci est une référence à 2 publications [@folta_light_2008; @symons_interactions_2003]
+
+# Matériel et méthodes
+
+Cette section décrit les conditions de votre expériementation, ainsi que le matériel utilisé. L'idée générale est que, sur bases des informations fournies, il soit possible de reproduire exactement votre expérience.
+
+# Résultats
+
+```{r load_data, echo=FALSE, eval=TRUE}
+data1 <- read.table(file = "student1/resulat.csv", header = TRUE, sep = ",")
+data2 <- read.table(file = "student2/Donneesgravitropisme - Copie.csv", header = TRUE, sep = ";")
+```
+
+
+```{r data1, echo=FALSE}
+# Mise en forme des données
+## Calcul de la différence de longueur entre le jour 0 et le jour 1
+difference  <- aggregate(longueur ~ plante + lumière, data1, "diff")
+
+## Calcul de le moyenne et de l'écart-type de ces nouvelles données
+sd             <- aggregate(longueur ~ lumière, difference, "sd")
+colnames(sd)   <- c("lumière", "sd") # renommage des colonnes pour faciliter le 'merge' à venir
+mean           <- aggregate(longueur ~ lumière, difference, "mean")
+colnames(mean) <- c("lumière", "mean") # renommage des colonnes pour faciliter le 'merge' à venir
+
+## Création du tableau de synthèse moyenne & écart-type pour chaque condition de lumière
+## Les 2 tableaux à 'merger' ont une seule colonne en commun ('lumière'), la commande 'merge'
+## fonctionne donc de manière automatique en sélectionnant cette colonne pour fusionner les
+## 2 tableaux
+data1.summarized <- merge(mean, sd)
+# head(data1.summarized)
+```
+
+Le document comporte des exemples de figures que vous pouvez réaliser grâce au package `ggplot2`. Les codes vous sont fournis pour que vous puissiez vous en inspirer.
+
+```{r fig1_data1, echo=FALSE, fig.height=3, fig.width=5, fig.cap="**Le Titre de ma figure 1**. Les éléments complémentaires pour comprendre ma figure 1. Parfois tout un paragraphe... qui peut être très long est qui permet à la figure d'être *auto-portante*..."}
+# Définition des paramètres principaux du graphique
+g  <- ggplot(data = data1.summarized, mapping = aes(x = lumière, y = mean, fill = lumière))
+
+# Création du graphique
+g.basic <- g + 
+  geom_bar(stat = "identity", position = position_dodge()) + # choix d'un barplot
+  geom_errorbar(width=.25, aes(ymin=mean-sd, ymax=mean+sd)) # ajout des écart-types
+
+# Amélioration du graphique
+g.improved <- g.basic +
+  scale_fill_manual(values = c("white","blue", "black", "red", "darkred")) + # re-définition des couleurs des barres
+  scale_x_discrete(labels=c("Blanc", "450nm", "Obscurité", "660nm", "750nm")) + # re-définition des étiquettes de l'axe x
+  ylab("Croissance (cm/jour)") + # Titre axe y
+  xlab("Conditions lumineuses") + # Titre axe x
+  guides(fill=FALSE) # Suppression de la légende
+
+#g.improved
+```
+
+```{r fig2_data1, echo=FALSE, fig.height=3, fig.width=5, fig.cap="**Le Titre de ma figure 1**. Les éléments complémentaires pour comprendre ma figure 1. Parfois tout un paragraphe... qui peut être très long est qui permet à la figure d'être *auto-portante*..."}
+# Mise en forme des données
+## Calcul de la moyenne de longueur pour chaque jour et condition lumineuse
+mean.per.day  <- aggregate(longueur ~ jour + lumière, data1, "mean")
+colnames(mean.per.day) <- c("jour", "lumière", "mean")
+sd.per.day  <- aggregate(longueur ~ jour + lumière, data1, "sd")
+colnames(sd.per.day) <- c("jour", "lumière", "sd")
+
+data.per.day <- merge(mean.per.day, sd.per.day)
+
+# Définition des paramètres principaux du graphique
+g  <- ggplot(data = data.per.day, mapping = aes(x = jour, y = mean, color = lumière))
+
+# Création du graphique
+g.basic <- g + 
+  geom_line() + # choix d'un graphique x/y de type ligne
+  geom_errorbar(width=.25, aes(ymin=mean-sd, ymax=mean+sd)) # ajout des écart-types
+
+# Amélioration du graphique
+g.improved <- g.basic +
+  scale_color_manual(values = c("white","blue", "black", "red", "darkred")) + # re-définition des couleurs des barres
+  scale_x_discrete(labels=c("Blanc", "450nm", "Obscurité", "660nm", "750nm")) + # re-définition des étiquettes de l'axe x
+  ylab("Croissance (cm/jour)") + # Titre axe y
+  xlab("Conditions lumineuses") + # Titre axe x
+  guides(fill=FALSE) # Suppression de la légende
+```
+
+
+```{r fig1_data2, echo=FALSE, fig.height=3, fig.width=5, fig.cap="**Le Titre de ma figure 1**. Les éléments complémentaires pour comprendre ma figure 1. Parfois tout un paragraphe... qui peut être très long est qui permet à la figure d'être *auto-portante*..."}
+# Mise en forme des données
+## Calcul de la courbure moyenne entre le jour 0 et 1 et en fonction du traitement NPA et de la position
+bending.mean  <- aggregate((Angle.Jour.1-Angle.Jour.0) ~ Position + NPA, data2, "mean")
+colnames(bending.mean) <- c("position", "npa", "mean")
+bending.sd  <- aggregate((Angle.Jour.1-Angle.Jour.0) ~ Position + NPA, data2, "sd")
+colnames(bending.sd) <- c("position", "npa", "sd")
+
+bending <- merge(bending.mean, bending.sd)
+
+# Définition des paramètres principaux du graphique
+g  <- ggplot(data = bending, mapping = aes(x = position, y = mean, fill = npa))
+
+# Création du graphique
+g.basic <- g + 
+  geom_errorbar(width=.25, aes(ymin=mean-sd, ymax=mean),  # ajout des écart-types
+                position=position_dodge(.9)) + # re-positionnement correct des barres d'erreur
+  geom_bar(stat = "identity", position = position_dodge(), color = "black") # choix d'un barplot
+
+
+# Autre option de présentation
+labels <- c(Avec = "+NPA", Sans = "-NPA") # pour le renommage des conditions sur le graphique
+g.facet <- g.basic +
+  facet_grid(. ~ npa, labeller = labeller(npa = labels)) # la paramètre labeller sert au renommage
+
+# Amélioration du graphique
+g.improved <- g.facet +
+  scale_fill_manual(values = c("blue", "red")) + # re-définition des couleurs des barres
+  scale_x_discrete(labels=c("90°C", "0°C")) + # re-définition des étiquettes de l'axe x
+  ylab("Courbure (°)") + # Titre axe y
+  xlab("Orientation de la boîte (°)") + # Titre axe x
+  guides(fill=FALSE) # Suppression de la légende
+
+g.improved
+```
+
+Cette partie est descriptive: vous y décrivez vos résulats **sans les discuter**. Chaque tableau ou chaque graphique y est analysé **complètement** en y faisant référence. Par exemple, vous écrirez :
+
+*"On observe sur la Figure 1 que, en absence de NPA, le pivotement de la boîte à 90° provoque une courbure moyenne de `r bending[bending$position == "Courbe" & bending$npa == "Sans", "mean"]`°, mesurée après 24h, alors qu'elle est quasi nulle (`r bending[bending$position == "Debout" & bending$npa == "Sans", "mean"]`°), comme attendu, dans la condition témoin. L'ajout de NPA dans le milieu inhibe considérablement cette courbure qui n'est plus que de `r bending[bending$position == "Courbe" & bending$npa == "Avec", "mean"]`° pour les plantes subissant le stimulus gravitropique et `r bending[bending$position == "Debout" & bending$npa == "Avec", "mean"]`° pour les témoins."*
+
+et non :
+
+*"On observe sur la Figure 1 que le NPA inhibe le transport de l'auxine et empêche la racine de répondre au stimulus gravitropique."*
+
+En effet, vous n'observez pas que le NPA inhibe le transport de l'auxine (c'est au contraire un élément connu de votre hypothèse), mais vous en observez les effets. Par ailleurs, cette dernière description n'assiste pas le lecteur dans le décriptage de la Figure 1...
+
+# Discussion et conclusion
+
+Dans cette partie, vous rappelez brièvement votre hypothèse et faites la synthèse des observations. En intégrant vos différentes observations et en les reliant à ce que vous connaissez de la littérature, vous pouvez élaborer une discussion (attention, pas de bla-bla, quantité != qualité) et une conclusion. 
+
+**N'essayez jamais de faire dire à une expérience ce qu'elle ne peut pas vous dire, imaginez plutôt ce qu'il faudrait faire pour aller plus loin.**
+
+
+# Références
+
+Ce dernier titre est placé tout à la fin de votre document de sorte que `R` y insère automatiquement les références que vous avez citées dans votre texte.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

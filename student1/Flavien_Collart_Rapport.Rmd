@@ -1,0 +1,70 @@
+---
+title: "Rapport: Quelles sont les longueurs d'onde influençant la transition étiolement/ dé-étiolement?"
+author: "Flavien Collart"
+date: "11 March 2016"
+output: 
+  pdf_document: 
+    fig_caption: yes
+bibliography: Biblio.bib
+---
+
+#Introduction
+
+L'étiolement se déroule quand les plantules poussent à l'obscurité. Celui-ci est caractérisé par des plantules ayant des longs hypocotyles et des cotylédons fermés. A l'inverse, le dé-étiolement se passe à la lumière et il est caractérisé par des plantules ayant des couts hypocotyles, des cotylédons ouverts et étendus ainsi que par l'apparition de chloroplastes matures[@li_phytochrome_2011].
+
+La lumière a donc un effet sur la transition étiolement/ dé-étiolement en provoquant notamment des changements dans l'élongation cellulaire[@symons_interactions_2003].
+
+Par conséquent, le but de notre expérience est d'essayer de déterminer quelles sont les longueurs d'onde qui induisent cette transition.
+
+#Materiel et méthodes
+
+###Matériel végétal
+
+On a utilisé des plantules étiolées d'*Arabidobsis thaliana* wt d'écotype Columbia (Col-0) poussant à l'obscurité, depuis 4 jours, sur un milieu gélosé MS + 1% de sucrose. 
+
+###Expérimentation
+
+Dans chacune des 5 boîtes de pétri contenant un milieu gélosé MS + 1% de sucrose, on a placé 8 plantules. On soumet chacune de ces boîtes à différentes lumières:
+
+1) Une lumière blanche produite par un néon Philips Master TL5 HO 54 W/827 et dont l'intensité est de 29,21 µmol m^-2^ s^-1^.
+2) Une une lumière bleue de 449nm de longueur d'onde, de 0,90 µmol m^-2^ s^-1^ d'intensité et dont la largeur de bande est égale à 20nm.
+3) Une une lumière rouge de 654nm de longueur d'onde, de 19,97 µmol m^-2^ s^-1^ d'intensité et dont la largeur de bande vaut 20nm.
+4) Une une lumière rouge lointaine de 734nm de longueur d'onde et dont l'intensité est de 98,26 µmol m^-2^ s^-1^ et et de largeur de bande étant égale à 26nm.
+5) à l'obscurité.
+
+Après cela, on a scanné les boîtes. Grâce à SmartRoot (version 4.21, 2014-04-11), on a mesuré, au jour 0 ainsi que le jour suivant, la longueur de l'hypocotyle de chaque plantule. Ces mesures ont été faites en commençant à partir du dessus de la graine jusqu'en dessous des cotylédons. 
+Ensuite, pour obtenir la croissance relative de *A. thaliana* en fonction des longueurs d'onde, on a calculé la moyenne des différences de longueur des hypocotyles pour chaque lumière ainsi que pour l'obscurité.
+
+#Résultats
+
+Comme on peut le voir sur la figure 1, les plantules croissant à l'obscurité ont une croissance relative plus grande que celles poussant sous une lumière blanche.
+
+De plus, les plantules poussant à la lumière rouge et rouge lointaine ont une croissance relative assez similaire voire légèrement inférieure à celles poussant sous la lumière blanche.
+
+Ensuite, on peut remarquer que les plantules grandissant sous une lumière bleue ont une croissance relative supérieure aux plantules poussant sous une lumière blanche.
+
+```{r,echo=FALSE,fig.cap="**Moyenne de croissance de *A. thaliana* wt sous stimulus lumineux**. Les croissances ont été déterminées en faisant la moyenne des différences de longueur des hypocotyles de plantules soumises, à un jour d'intervalle, à différente lumière (obscurité; lumière blanche, rouge, rouge lointaine et bleue)."} 
+# permet de ne pas afficher le code et de ne montrer que le graphique + fig.cap permet de mettre une légende au  graphique
+resulat <- read.csv("~/Desktop/TP-Bac3_2016/resulat.csv") #permet d'importer des données
+croissance<- function (y){
+  mean(resulat$longueur[resulat$jour==1 & resulat$lumière==y]- resulat$longueur[resulat$jour==0 & resulat$lumière==y])
+} # fonction permettant de calculer la moyenne des différences des longueurs au jour 0 et au jour 1 pour un type de lumière
+c1<-sapply(levels(resulat$lumière)[c(3, 1, 4, 5, 2)],croissance) #permet d'appliquer la fonction croissance à tous les types de lumière
+ecarttype<- function (y){
+  sd(resulat$longueur[resulat$jour==1 & resulat$lumière==y]- resulat$longueur[resulat$jour==0 & resulat$lumière==y])} #fonction permettant de calculer les écarts-types 
+ec<-sapply(levels(resulat$lumière)[c(3, 1, 4, 5, 2)],ecarttype)
+centres <- barplot(c1,xlab = "Type de lumière",ylab = "Croissance (cm)",col="royalblue3", ylim=c(0,0.8))#permet de générer un graphique de type barplot
+segments(x0=centres, x1=centres, y0=c1-ec, y1=c1+ec) #permet de mettre les écarts-types dans le barplot
+```
+
+#Discussion et conclusion
+
+Comme attendu, l'obscurité ne permet pas le dé-étiolement tandis que la lumière blanche a un effet sur la transition étiolement/ dé-étiolement [@li_phytochrome_2011].
+
+En regardant les résultats, les lumières rouges (654nm) et rouges lointaines (734nm) ont un effet légèrement plus important que la lumière blanche dans le processus de dé-étiolement. Ceci pourrait être dû au spectre d'absorption de la lumière blanche. Etant donné que la lumière blanche utilisée absorbe peu dans les longueurs d'onde du rouge et du rouge lointain et que les phytochromes, présents dans les plantules, absorbent majoritairement dans le rouge et le rouge lointain [@neff_light:_2000], ceux-ci reconnaissent donc moins efficacement cette lumière blanche que les lumières rouges et rouges lointaines.
+
+Enfin, la lumière bleue (449nm) a un effet sur la transition étiolement/ dé-étiolement. Il semblerait que son effet soit moins important que pour les autres lumières. Pour affirmer cette constation, il faudrait augmenter le nombre de répétitions ainsi que le nombre de prises de mesure.
+
+En conclusion, toutes les lumières utilisées pour cette expérience influencent la transition étiolement/ dé-étiolement. Pour affirmer si une lumière est plus ou moins efficace qu'une autre, il serait intéressant de refaire cette expérience en augmentant le nombre de répétitions et le nombre de jours de prises de mesure.
+
+#Références
