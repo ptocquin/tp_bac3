@@ -156,7 +156,7 @@ Dans cette partie, vous rappelez brièvement votre hypothèse et faites la synth
 
 # Références
 
-Ce dernier titre est placé tout à la fin de votre document de sorte que `R` y insère automatiquement les références que vous avez citées dans votre texte.
+**Ce dernier titre est placé tout à la fin de votre document de sorte que `R` y insère automatiquement les références que vous avez citées dans votre texte.**
 
 
 
