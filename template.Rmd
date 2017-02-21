@@ -139,7 +139,7 @@ g.improved
 
 Cette partie est descriptive: vous y décrivez vos résulats **sans les discuter**. Chaque tableau ou chaque graphique y est analysé **complètement** en y faisant référence. Par exemple, vous écrirez :
 
-*"On observe sur la Figure 1 que, en absence de NPA, le pivotement de la boîte à 90° provoque une courbure moyenne de `r bending[bending$position == "Courbe" & bending$npa == "Sans", "mean"]`°, mesurée après 24h, alors qu'elle est quasi nulle (`r bending[bending$position == "Debout" & bending$npa == "Sans", "mean"]`°), comme attendu, dans la condition témoin. L'ajout de NPA dans le milieu inhibe considérablement cette courbure qui n'est plus que de `r bending[bending$position == "Courbe" & bending$npa == "Avec", "mean"]`° pour les plantes subissant le stimulus gravitropique et `r bending[bending$position == "Debout" & bending$npa == "Avec", "mean"]`° pour les témoins."*
+*"On observe sur la Figure 1 que, en absence de NPA, le pivotement de la boîte à 90° provoque une courbure moyenne de `r format(bending[bending$position == "Courbe" & bending$npa == "Sans", "mean"], digits = 0)`°, mesurée après 24h, alors qu'elle est quasi nulle (`r format(bending[bending$position == "Debout" & bending$npa == "Sans", "mean"], digits = 0)`°), comme attendu, dans la condition témoin. L'ajout de NPA dans le milieu inhibe considérablement cette courbure qui n'est plus que de `r format(bending[bending$position == "Courbe" & bending$npa == "Avec", "mean"], digits = 0)`° pour les plantes subissant le stimulus gravitropique et `r format(bending[bending$position == "Debout" & bending$npa == "Avec", "mean"], digits = 0)`° pour les témoins."*
 
 et non :
 
