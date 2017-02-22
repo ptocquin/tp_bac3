@@ -20,9 +20,19 @@ L'introduction contient les éléments, étayés par la littératures scientifiq
 
 Ceci est une référence à 2 publications [@folta_light_2008; @symons_interactions_2003]
 
+**Votre introduction sera concise mais devra permettre à ceux qui la lisent de comprendre (1) le contexte de votre travail, (2) les éléments concrets sur lesquels vous vous appuyez et qui vous amènent à (3) élaborer votre question/hypothèse.**
+
 # Matériel et méthodes
 
-Cette section décrit les conditions de votre expériementation, ainsi que le matériel utilisé. L'idée générale est que, sur bases des informations fournies, il soit possible de reproduire exactement votre expérience.
+Cette section décrit les conditions de votre expérimentation, ainsi que le matériel utilisé. L'idée générale est que, sur bases des informations fournies, il soit possible de reproduire exactement votre expérience. 
+
+**Utilisez toujours un style concis ! Pas de bla-bla ! Voici des exemples extraits de [@jensen_auxin_1998] :**
+
+> Arabidopsis thaliana seeds were surface sterilized for 20 min in 20% (v/v) commercial bleach and 0.1% Triton X-100, rinsed four times with sterile, distilled water, and chilled for 2 d at 4°C. Sterile seeds were placed in square Petri plates on medium containing nutrient salts, 8 g/L 1 agar, and 10 g/L 1 Suc (Lincoln et al., 1990). ... All plants were ecotype Columbia unless stated otherwise. Petri plates were placed vertically and the seed- lings were grown at 22°C in darkness or in continuous light for 7 d. In experiments with the photoreceptor mutants, the seeds were given 16 h of white light to ensure germination before placement in the experimental light conditions. Seeds of the mutants analyzed in this study were obtained from in-house stocks or from the Arabidopsis Biological Resource Center (Ohio State University, Columbus). ...
+
+> **Light Sources**
+
+> White light at up to 150 mol.m^-2^ s^-1^ was obtained with mixed cool-white and warm-fluorescent light bulbs. Blue light up to 30 mol.m^-2^ s^-1^ was obtained by filtering light from a bank of cool-white fluorescent bulbs through blue plexiglass (no. 2424, Rohm and Hass, Darmstadt, Germany). Red and far-red light up to 30 mol.m^-2^ s^-1^ was provided by a solid-state light-emitting diode system (Qbeam 220, Quantum Devices, Barnevel, WI). Neutral- density screens were used to vary the fluence rates. Fluence rates of white, blue, and red light were measured with a quantum photometer (model LI-189, Li-Cor, Lincoln, NE) and fluence rates of far-red light were measured with a spectroradiometer (model LI-1800, Li-Cor).
 
 # Résultats
 
@@ -52,54 +62,6 @@ data1.summarized <- merge(mean, sd)
 ```
 
 Le document comporte des exemples de figures que vous pouvez réaliser grâce au package `ggplot2`. Les codes vous sont fournis pour que vous puissiez vous en inspirer.
-
-```{r fig1_data1, echo=FALSE, fig.height=3, fig.width=5, fig.cap="**Le Titre de ma figure 1**. Les éléments complémentaires pour comprendre ma figure 1. Parfois tout un paragraphe... qui peut être très long est qui permet à la figure d'être *auto-portante*..."}
-# Définition des paramètres principaux du graphique
-g  <- ggplot(data = data1.summarized, mapping = aes(x = lumière, y = mean, fill = lumière))
-
-# Création du graphique
-g.basic <- g + 
-  geom_bar(stat = "identity", position = position_dodge()) + # choix d'un barplot
-  geom_errorbar(width=.25, aes(ymin=mean-sd, ymax=mean+sd)) # ajout des écart-types
-
-# Amélioration du graphique
-g.improved <- g.basic +
-  scale_fill_manual(values = c("white","blue", "black", "red", "darkred")) + # re-définition des couleurs des barres
-  scale_x_discrete(labels=c("Blanc", "450nm", "Obscurité", "660nm", "750nm")) + # re-définition des étiquettes de l'axe x
-  ylab("Croissance (cm/jour)") + # Titre axe y
-  xlab("Conditions lumineuses") + # Titre axe x
-  guides(fill=FALSE) # Suppression de la légende
-
-#g.improved
-```
-
-```{r fig2_data1, echo=FALSE, fig.height=3, fig.width=5, fig.cap="**Le Titre de ma figure 1**. Les éléments complémentaires pour comprendre ma figure 1. Parfois tout un paragraphe... qui peut être très long est qui permet à la figure d'être *auto-portante*..."}
-# Mise en forme des données
-## Calcul de la moyenne de longueur pour chaque jour et condition lumineuse
-mean.per.day  <- aggregate(longueur ~ jour + lumière, data1, "mean")
-colnames(mean.per.day) <- c("jour", "lumière", "mean")
-sd.per.day  <- aggregate(longueur ~ jour + lumière, data1, "sd")
-colnames(sd.per.day) <- c("jour", "lumière", "sd")
-
-data.per.day <- merge(mean.per.day, sd.per.day)
-
-# Définition des paramètres principaux du graphique
-g  <- ggplot(data = data.per.day, mapping = aes(x = jour, y = mean, color = lumière))
-
-# Création du graphique
-g.basic <- g + 
-  geom_line() + # choix d'un graphique x/y de type ligne
-  geom_errorbar(width=.25, aes(ymin=mean-sd, ymax=mean+sd)) # ajout des écart-types
-
-# Amélioration du graphique
-g.improved <- g.basic +
-  scale_color_manual(values = c("white","blue", "black", "red", "darkred")) + # re-définition des couleurs des barres
-  scale_x_discrete(labels=c("Blanc", "450nm", "Obscurité", "660nm", "750nm")) + # re-définition des étiquettes de l'axe x
-  ylab("Croissance (cm/jour)") + # Titre axe y
-  xlab("Conditions lumineuses") + # Titre axe x
-  guides(fill=FALSE) # Suppression de la légende
-```
-
 
 ```{r fig1_data2, echo=FALSE, fig.height=3, fig.width=5, fig.cap="**Le Titre de ma figure 1**. Les éléments complémentaires pour comprendre ma figure 1. Parfois tout un paragraphe... qui peut être très long est qui permet à la figure d'être *auto-portante*..."}
 # Mise en forme des données
@@ -146,6 +108,56 @@ et non :
 *"On observe sur la Figure 1 que le NPA inhibe le transport de l'auxine et empêche la racine de répondre au stimulus gravitropique."*
 
 En effet, vous n'observez pas que le NPA inhibe le transport de l'auxine (c'est au contraire un élément connu de votre hypothèse), mais vous en observez les effets. Par ailleurs, cette dernière description n'assiste pas le lecteur dans le décriptage de la Figure 1...
+
+Les figures 2 et 3 ci-après vous donnent d'autres exemples et codes de graphiques.
+
+```{r fig2_data1, echo=FALSE, fig.height=3, fig.width=5, fig.cap="**Le Titre de ma figure 2**. Les éléments complémentaires pour comprendre ma figure 2. Parfois tout un paragraphe... qui peut être très long est qui permet à la figure d'être *auto-portante*..."}
+# Définition des paramètres principaux du graphique
+g  <- ggplot(data = data1.summarized, mapping = aes(x = lumière, y = mean, fill = lumière))
+
+# Création du graphique de type 'barplot'
+g.basic <- g + 
+  geom_bar(stat = "identity", position = position_dodge()) + # choix d'un barplot
+  geom_errorbar(width=.25, aes(ymin=mean-sd, ymax=mean+sd)) # ajout des écart-types
+
+# Amélioration du graphique
+g.improved <- g.basic +
+  scale_fill_manual(values = c("white","blue", "black", "red", "darkred")) + # re-définition des couleurs des barres
+  scale_x_discrete(labels=c("Blanc", "450nm", "Obscurité", "660nm", "750nm")) + # re-définition des étiquettes de l'axe x
+  ylab("Croissance (cm/jour)") + # Titre axe y
+  xlab("Conditions lumineuses") + # Titre axe x
+  guides(fill=FALSE) # Suppression de la légende
+
+g.improved
+```
+
+```{r fig3_data1, echo=FALSE, fig.height=3, fig.width=5, fig.cap="**Le Titre de ma figure 3**. Les éléments complémentaires pour comprendre ma figure 3. Parfois tout un paragraphe... qui peut être très long est qui permet à la figure d'être *auto-portante*..."}
+# Mise en forme des données
+## Calcul de la moyenne de longueur pour chaque jour et condition lumineuse
+mean.per.day  <- aggregate(longueur ~ jour + lumière, data1, "mean")
+colnames(mean.per.day) <- c("jour", "lumière", "mean")
+sd.per.day  <- aggregate(longueur ~ jour + lumière, data1, "sd")
+colnames(sd.per.day) <- c("jour", "lumière", "sd")
+
+data.per.day <- merge(mean.per.day, sd.per.day)
+
+# Définition des paramètres principaux du graphique
+g  <- ggplot(data = data.per.day, mapping = aes(x = jour, y = mean, color = lumière))
+
+# Création du graphique de type 'X-Y, lignes'
+g.basic <- g + 
+  geom_line() + # choix d'un graphique x/y de type ligne
+  geom_errorbar(width=.05, aes(ymin=mean-sd, ymax=mean+sd)) # ajout des écart-types
+
+# Amélioration du graphique
+g.improved <- g.basic +
+  scale_color_manual(values = c("white","blue", "black", "red", "darkred")) + # re-définition des couleurs des barres
+  scale_x_continuous(breaks = c(0,1)) + # re-définition des étiquettes de l'axe x
+  ylab("Croissance (cm/jour)") + # Titre axe y
+  xlab("Jours")
+
+g.improved
+```
 
 # Discussion et conclusion
 
