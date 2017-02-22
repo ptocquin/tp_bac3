@@ -16,7 +16,7 @@ library(ggplot2)
 
 # Introduction
 
-L'introduction contient les éléments, étayés par la littératures scientifiques, qui supportent la ou les hypothèses que vous allez évaluer par votre expérimentation. A ce titre, toute information doit être reliée à sa source, c'est à dire à une référence bibliographique.
+L'introduction contient les éléments, étayés par la littérature scientifique, qui supportent la ou les hypothèses que vous allez évaluer par votre expérimentation. A ce titre, toute information doit être reliée à sa source, c'est à dire à une référence bibliographique.
 
 Ceci est une référence à 2 publications [@folta_light_2008; @symons_interactions_2003]
 
