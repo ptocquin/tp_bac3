@@ -4,7 +4,7 @@ author: "Pierre Tocquin"
 date: "10 mars 2016"
 output:
   pdf_document: default
-  word_document: default
+      fig_caption: yes
 bibliography: biblio_TP-1.bib
 ---
 
