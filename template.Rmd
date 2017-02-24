@@ -159,6 +159,65 @@ g.improved <- g.basic +
 g.improved
 ```
 
+
+```{r fig1_data3, echo=FALSE, fig.height=3, fig.width=5, fig.cap="**Le Titre de ma figure**. Les éléments complémentaires pour comprendre ma figure. Parfois tout un paragraphe... qui peut être très long est qui permet à la figure d'être *auto-portante*..."}
+data3   <- read.csv(file = "student3/data.csv", header = TRUE, sep = ",")
+data3$X <- NULL # suppression de la première colonne
+data3$stimulus <- factor(data3$stimulus)  # transformation de cette donnée en 'facteurs' pour qu'elle soit
+                                          # comprise par ggplot comme un paramètre de regroupement des données
+
+# Définition des paramètres principaux du graphique
+# Notez ici l'utilisation de l'argument 'group'
+g  <- ggplot(data = data3, mapping = aes(x = stimulus, y = mean, fill = traitement, group = traitement))
+
+# Création du graphique
+g.basic <- g + 
+  geom_errorbar(width=.25, aes(ymin=mean, ymax=mean+sd),  # ajout des écart-types
+                position=position_dodge(.9)) + # re-positionnement correct des barres d'erreur
+  geom_bar(stat = "identity", position = position_dodge(0.9), color = "black") # choix d'un barplot
+
+# Séparation du graphique en 2 panneaux sur base du génotype
+g.facet <- g.basic +
+  facet_grid(. ~ genotype, labeller = labeller(genotype = c(GUS = "WT", PIN = "pin3-4"))) # la paramètre labeller sert au renommage
+
+# Amélioration du graphique
+g.improved <- g.facet +
+  scale_fill_manual(values = c("blue","red"), name = "Traitement", labels = c("-NPA", "+NPA")) + # paramètres légende
+  scale_x_discrete(labels=c("90°C", "0°C")) + # re-définition des étiquettes de l'axe x
+  ylab("Courbure (°)") + # Titre axe y
+  xlab("Orientation de la boîte (°)") # 
+
+g.improved
+```
+
+
+```{r fig1_data4, echo=FALSE, fig.height=3, fig.width=5, fig.cap="**Le Titre de ma figure**. Les éléments complémentaires pour comprendre ma figure. Parfois tout un paragraphe... qui peut être très long est qui permet à la figure d'être *auto-portante*..."}
+data4   <- read.csv(file = "student3/fulldata.csv", header = TRUE, sep = ",")
+data4$stimulus <- factor(data4$stimulus)  # transformation de cette donnée en 'facteurs' pour qu'elle soit
+                                          # comprise par ggplot comme un paramètre de regroupement des données
+
+# Définition des paramètres principaux du graphique
+# Notez ici l'utilisation de l'argument 'group'
+g  <- ggplot(data = data4, mapping = aes(x = stimulus, y = angle, fill = stimulus))
+
+# Création du graphique
+g.basic <- g + 
+  geom_dotplot(binaxis = "y", stackdir = "center", binwidth = 7) 
+
+# Séparation du graphique en panneaux sur base du génotype et du traitement
+g.facet <- g.basic +
+  facet_grid(. ~ Genotype + traitement, labeller = labeller(Genotype = c(GUS = "WT", PIN = "pin3-4"))) # la paramètre labeller sert au renommage
+
+# Amélioration du graphique
+g.improved <- g.facet +
+  scale_x_discrete(labels=c("90°C", "0°C")) + # re-définition des étiquettes de l'axe x
+  ylab("Courbure (°)") + # Titre axe y
+  xlab("Orientation de la boîte (°)") + # Titre axe x
+  guides(fill=FALSE) # Suppression de la légende
+
+g.improved
+```
+
 # Discussion et conclusion
 
 Dans cette partie, vous rappelez brièvement votre hypothèse et faites la synthèse des observations. En intégrant vos différentes observations et en les reliant à ce que vous connaissez de la littérature, vous pouvez élaborer une discussion (attention, pas de bla-bla, quantité != qualité) et une conclusion. 
