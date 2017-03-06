@@ -3,7 +3,7 @@ title: "Untitled"
 author: "Pierre Tocquin"
 date: "10 mars 2016"
 output:
-  pdf_document: default
+  pdf_document:
       fig_caption: yes
 bibliography: biblio_TP-1.bib
 ---
@@ -63,7 +63,7 @@ data1.summarized <- merge(mean, sd)
 
 Le document comporte des exemples de figures que vous pouvez réaliser grâce au package `ggplot2`. Les codes vous sont fournis pour que vous puissiez vous en inspirer.
 
-```{r fig1_data2, echo=FALSE, fig.height=3, fig.width=5, fig.cap="**Le Titre de ma figure 1**. Les éléments complémentaires pour comprendre ma figure 1. Parfois tout un paragraphe... qui peut être très long est qui permet à la figure d'être *auto-portante*..."}
+```{r fig1_data2, echo=FALSE, fig.height=3, fig.width=5, fig.cap="**Le Titre de ma figure 1**. Les éléments complémentaires pour comprendre ma figure 1. Parfois tout un paragraphe... qui peut être très long et qui permet à la figure d'être *auto-portante*..."}
 # Mise en forme des données
 ## Calcul de la courbure moyenne entre le jour 0 et 1 et en fonction du traitement NPA et de la position
 bending.mean  <- aggregate((Angle.Jour.1-Angle.Jour.0) ~ Position + NPA, data2, "mean")
@@ -111,7 +111,7 @@ En effet, vous n'observez pas que le NPA inhibe le transport de l'auxine (c'est 
 
 Les figures 2 et 3 ci-après vous donnent d'autres exemples et codes de graphiques.
 
-```{r fig2_data1, echo=FALSE, fig.height=3, fig.width=5, fig.cap="**Le Titre de ma figure 2**. Les éléments complémentaires pour comprendre ma figure 2. Parfois tout un paragraphe... qui peut être très long est qui permet à la figure d'être *auto-portante*..."}
+```{r fig2_data1, echo=FALSE, fig.height=3, fig.width=5, fig.cap="**Le Titre de ma figure 2**. Les éléments complémentaires pour comprendre ma figure 2. Parfois tout un paragraphe... qui peut être très long et qui permet à la figure d'être *auto-portante*..."}
 # Définition des paramètres principaux du graphique
 g  <- ggplot(data = data1.summarized, mapping = aes(x = lumière, y = mean, fill = lumière))
 
@@ -131,7 +131,7 @@ g.improved <- g.basic +
 g.improved
 ```
 
-```{r fig3_data1, echo=FALSE, fig.height=3, fig.width=5, fig.cap="**Le Titre de ma figure 3**. Les éléments complémentaires pour comprendre ma figure 3. Parfois tout un paragraphe... qui peut être très long est qui permet à la figure d'être *auto-portante*..."}
+```{r fig3_data1, echo=FALSE, fig.height=3, fig.width=5, fig.cap="**Le Titre de ma figure 3**. Les éléments complémentaires pour comprendre ma figure 3. Parfois tout un paragraphe... qui peut être très long et qui permet à la figure d'être *auto-portante*..."}
 # Mise en forme des données
 ## Calcul de la moyenne de longueur pour chaque jour et condition lumineuse
 mean.per.day  <- aggregate(longueur ~ jour + lumière, data1, "mean")
@@ -160,7 +160,7 @@ g.improved
 ```
 
 
-```{r fig1_data3, echo=FALSE, fig.height=3, fig.width=5, fig.cap="**Le Titre de ma figure**. Les éléments complémentaires pour comprendre ma figure. Parfois tout un paragraphe... qui peut être très long est qui permet à la figure d'être *auto-portante*..."}
+```{r fig1_data3, echo=FALSE, fig.height=3, fig.width=5, fig.cap="**Le Titre de ma figure**. Les éléments complémentaires pour comprendre ma figure. Parfois tout un paragraphe... qui peut être très long et qui permet à la figure d'être *auto-portante*..."}
 data3   <- read.csv(file = "student3/data.csv", header = TRUE, sep = ",")
 data3$X <- NULL # suppression de la première colonne
 data3$stimulus <- factor(data3$stimulus)  # transformation de cette donnée en 'facteurs' pour qu'elle soit
@@ -191,7 +191,7 @@ g.improved
 ```
 
 
-```{r fig1_data4, echo=FALSE, fig.height=3, fig.width=5, fig.cap="**Le Titre de ma figure**. Les éléments complémentaires pour comprendre ma figure. Parfois tout un paragraphe... qui peut être très long est qui permet à la figure d'être *auto-portante*..."}
+```{r fig1_data4, echo=FALSE, fig.height=3, fig.width=5, fig.cap="**Le Titre de ma figure**. Les éléments complémentaires pour comprendre ma figure. Parfois tout un paragraphe... qui peut être très long et qui permet à la figure d'être *auto-portante*..."}
 data4   <- read.csv(file = "student3/fulldata.csv", header = TRUE, sep = ",")
 data4$stimulus <- factor(data4$stimulus)  # transformation de cette donnée en 'facteurs' pour qu'elle soit
                                           # comprise par ggplot comme un paramètre de regroupement des données
