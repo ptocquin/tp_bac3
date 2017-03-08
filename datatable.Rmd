@@ -27,7 +27,7 @@ head(data)
 
 The `data.table` object comes with built-in aggregative capabilities (*via* the `by` keyword). A picture is worth a thousand words...
 
-![The data.table general form](datatable.png){width=50%}
+![The data.table general form (from https://github.com/Rdatatable/data.table/wiki)](datatable.png){width=75%}
 
 ### Row filtering
 
@@ -107,8 +107,8 @@ g  <- ggplot(data = my_summary, mapping = aes(x = Position, y = mean, fill = NPA
 
 # A 'basic' barplot + error bars
 g.basic <- g + 
-  geom_bar(stat = "identity", position = position_dodge()) + 
-  geom_errorbar(width=.25, aes(ymin=mean-sd, ymax=mean), position = position_dodge(0.9))
+  geom_errorbar(width=.25, aes(ymin=mean-sd, ymax=mean), position = position_dodge(0.9)) +
+  geom_bar(stat = "identity", position = position_dodge(), color = "black")
 
 g.basic
 ```
@@ -116,7 +116,7 @@ g.basic
 ```{r improved_plot, fig.height=3, fig.width=5, fig.cap="**My improved plot**."}
 # An improved plot
 g.improved <- g.basic +
-  scale_fill_manual(values = c("red","blue")) + # changing the colors
+  scale_fill_manual(values = c("orange","deepskyblue")) + # changing the colors
   scale_x_discrete(labels=c("Gravitropic stimulus",
                             "No stimulus")) + # changing the x tick labels
   ylab("Gravitopric induced curvature (°)") + # The x axis title

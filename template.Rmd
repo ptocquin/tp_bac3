@@ -46,6 +46,7 @@ Cette section décrit les conditions de votre expérimentation, ainsi que le mat
 
 # Lecture des données csv, méthode data.table
 data1 <- fread(input = "student1/resulat.csv")
+head(data1)
 data2 <- fread(input = "student2/gravi.csv")
 ```
 
