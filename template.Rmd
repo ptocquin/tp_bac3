@@ -9,9 +9,12 @@ bibliography: biblio_TP-1.bib
 ---
 
 ```{r libraries, echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
-# Chargement d'une librairie pour la production de graphiques`
+# Installation d'une librairie pour la production de graphiques`
 # install.packages("ggplot2")
 library(ggplot2)
+# Installation d'une librairie pour la gestion des données tabulaires
+# install.packages("data.table")
+library(data.table)
 ```
 
 # Introduction
@@ -37,41 +40,54 @@ Cette section décrit les conditions de votre expérimentation, ainsi que le mat
 # Résultats
 
 ```{r load_data, echo=FALSE, eval=TRUE}
-data1 <- read.table(file = "student1/resulat.csv", header = TRUE, sep = ",")
-data2 <- read.table(file = "student2/Donneesgravitropisme - Copie.csv", header = TRUE, sep = ";")
+# Lecture des données csv, méthode de r-base
+# data1 <- read.table(file = "student1/resulat.csv", header = TRUE, sep = ",")
+# data2 <- read.table(file = "student2/Donneesgravitropisme - Copie.csv", header = TRUE, sep = ";")
+
+# Lecture des données csv, méthode data.table
+data1 <- fread(input = "student1/resulat.csv")
+data2 <- fread(input = "student2/gravi.csv")
 ```
 
 
 ```{r data1, echo=FALSE}
-# Mise en forme des données
+## Mise en forme des données, méthode r-base ######################################################
 ## Calcul de la différence de longueur entre le jour 0 et le jour 1
-difference  <- aggregate(longueur ~ plante + lumière, data1, "diff")
+# difference  <- aggregate(longueur ~ plante + lumière, data1, "diff")
 
 ## Calcul de le moyenne et de l'écart-type de ces nouvelles données
-sd             <- aggregate(longueur ~ lumière, difference, "sd")
-colnames(sd)   <- c("lumière", "sd") # renommage des colonnes pour faciliter le 'merge' à venir
-mean           <- aggregate(longueur ~ lumière, difference, "mean")
-colnames(mean) <- c("lumière", "mean") # renommage des colonnes pour faciliter le 'merge' à venir
+# sd             <- aggregate(longueur ~ lumière, difference, "sd")
+# colnames(sd)   <- c("lumière", "sd") # renommage des colonnes pour faciliter le 'merge' à venir
+# mean           <- aggregate(longueur ~ lumière, difference, "mean")
+# colnames(mean) <- c("lumière", "mean") # renommage des colonnes pour faciliter le 'merge' à venir
 
 ## Création du tableau de synthèse moyenne & écart-type pour chaque condition de lumière
 ## Les 2 tableaux à 'merger' ont une seule colonne en commun ('lumière'), la commande 'merge'
 ## fonctionne donc de manière automatique en sélectionnant cette colonne pour fusionner les
 ## 2 tableaux
-data1.summarized <- merge(mean, sd)
+# data1.summarized <- merge(mean, sd)
 # head(data1.summarized)
+
+# Mise en forme des données, méthode data.table ###################################################
+data1.summarized <- data1[, j=list(diff=longueur[jour==1]-longueur[jour==0]), by=list(plante, lumière)][, list(mean=mean(diff), sd=sd(diff)), by=lumière]
+head(data1.summarized)
 ```
 
 Le document comporte des exemples de figures que vous pouvez réaliser grâce au package `ggplot2`. Les codes vous sont fournis pour que vous puissiez vous en inspirer.
 
 ```{r fig1_data2, echo=FALSE, fig.height=3, fig.width=5, fig.cap="**Le Titre de ma figure 1**. Les éléments complémentaires pour comprendre ma figure 1. Parfois tout un paragraphe... qui peut être très long et qui permet à la figure d'être *auto-portante*..."}
-# Mise en forme des données
+## Mise en forme des données, méthode r-base ######################################################
 ## Calcul de la courbure moyenne entre le jour 0 et 1 et en fonction du traitement NPA et de la position
-bending.mean  <- aggregate((Angle.Jour.1-Angle.Jour.0) ~ Position + NPA, data2, "mean")
-colnames(bending.mean) <- c("position", "npa", "mean")
-bending.sd  <- aggregate((Angle.Jour.1-Angle.Jour.0) ~ Position + NPA, data2, "sd")
-colnames(bending.sd) <- c("position", "npa", "sd")
+# bending.mean  <- aggregate((Angle.Jour.1-Angle.Jour.0) ~ Position + NPA, data2, "mean")
+# colnames(bending.mean) <- c("position", "npa", "mean")
+# bending.sd  <- aggregate((Angle.Jour.1-Angle.Jour.0) ~ Position + NPA, data2, "sd")
+# colnames(bending.sd) <- c("position", "npa", "sd")
+# 
+# bending <- merge(bending.mean, bending.sd)
 
-bending <- merge(bending.mean, bending.sd)
+bending <- data2[, list(diff.angle=angle[time==1]-angle[time==0]), by=list(Position, NPA, Plante)][, list(mean=mean(diff.angle), sd=sd(diff.angle)), by=list(Position,NPA)]
+
+data2[, angle]
 
 # Définition des paramètres principaux du graphique
 g  <- ggplot(data = bending, mapping = aes(x = position, y = mean, fill = npa))
