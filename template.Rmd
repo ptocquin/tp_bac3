@@ -46,7 +46,6 @@ Cette section décrit les conditions de votre expérimentation, ainsi que le mat
 
 # Lecture des données csv, méthode data.table
 data1 <- fread(input = "student1/resulat.csv")
-head(data1)
 data2 <- fread(input = "student2/gravi.csv")
 ```
 
@@ -70,28 +69,35 @@ data2 <- fread(input = "student2/gravi.csv")
 # head(data1.summarized)
 
 # Mise en forme des données, méthode data.table ###################################################
-data1.summarized <- data1[, j=list(diff=longueur[jour==1]-longueur[jour==0]), by=list(plante, lumière)][, list(mean=mean(diff), sd=sd(diff)), by=lumière]
-head(data1.summarized)
+data1.summarized <- data1[,
+                          list(diff=longueur[jour==1]-longueur[jour==0]),
+                          by=list(plante, lumière)][, 
+                                                    list(mean=mean(diff), sd=sd(diff)),
+                                                    by=lumière]
+
+data2.summarized <- data2[time == 1,
+                          list(direction=mean(angle-180), ecarttype=sd(angle-180)),
+                          by=list(Position, NPA)]
 ```
 
 Le document comporte des exemples de figures que vous pouvez réaliser grâce au package `ggplot2`. Les codes vous sont fournis pour que vous puissiez vous en inspirer.
 
 ```{r fig1_data2, echo=FALSE, fig.height=3, fig.width=5, fig.cap="**Le Titre de ma figure 1**. Les éléments complémentaires pour comprendre ma figure 1. Parfois tout un paragraphe... qui peut être très long et qui permet à la figure d'être *auto-portante*..."}
 ## Mise en forme des données, méthode r-base ######################################################
-## Calcul de la courbure moyenne entre le jour 0 et 1 et en fonction du traitement NPA et de la position
-# bending.mean  <- aggregate((Angle.Jour.1-Angle.Jour.0) ~ Position + NPA, data2, "mean")
-# colnames(bending.mean) <- c("position", "npa", "mean")
-# bending.sd  <- aggregate((Angle.Jour.1-Angle.Jour.0) ~ Position + NPA, data2, "sd")
-# colnames(bending.sd) <- c("position", "npa", "sd")
+## Calcul de la direction de croissance au jour 1 et en fonction du traitement NPA et du stimulus
+# bending.mean  <- aggregate(angle-180 ~ Position + NPA, data2[data2$time == 1,], "mean")
+# colnames(bending.mean) <- c("Position", "NPA", "mean")
+# bending.sd  <- aggregate(angle-180 ~ Position + NPA, data2[data2$time == 1,], "sd")
+# colnames(bending.sd) <- c("Position", "NPA", "sd")
 # 
 # bending <- merge(bending.mean, bending.sd)
 
-bending <- data2[, list(diff.angle=angle[time==1]-angle[time==0]), by=list(Position, NPA, Plante)][, list(mean=mean(diff.angle), sd=sd(diff.angle)), by=list(Position,NPA)]
-
-data2[, angle]
+bending <- data2[time == 1, 
+                 list(mean=mean(angle-180), sd=sd(angle-180)),
+                 by=list(Position, NPA)]
 
 # Définition des paramètres principaux du graphique
-g  <- ggplot(data = bending, mapping = aes(x = position, y = mean, fill = npa))
+g  <- ggplot(data = bending, mapping = aes(x = Position, y = mean, fill = NPA))
 
 # Création du graphique
 g.basic <- g + 
@@ -99,26 +105,21 @@ g.basic <- g +
                 position=position_dodge(.9)) + # re-positionnement correct des barres d'erreur
   geom_bar(stat = "identity", position = position_dodge(), color = "black") # choix d'un barplot
 
-
-# Autre option de présentation
-labels <- c(Avec = "+NPA", Sans = "-NPA") # pour le renommage des conditions sur le graphique
-g.facet <- g.basic +
-  facet_grid(. ~ npa, labeller = labeller(npa = labels)) # la paramètre labeller sert au renommage
+# g.basic
 
 # Amélioration du graphique
-g.improved <- g.facet +
-  scale_fill_manual(values = c("blue", "red")) + # re-définition des couleurs des barres
-  scale_x_discrete(labels=c("90°C", "0°C")) + # re-définition des étiquettes de l'axe x
-  ylab("Courbure (°)") + # Titre axe y
-  xlab("Orientation de la boîte (°)") + # Titre axe x
-  guides(fill=FALSE) # Suppression de la légende
+g.improved <- g.basic +
+  scale_fill_manual(values = c("deepskyblue", "orange")) + # re-définition des couleurs des barres
+  scale_x_discrete(labels=c("90°", "0°")) + # re-définition des étiquettes de l'axe x
+  ylab("Direction de croissance \npar rapport à l'axe vertical (°)") + # Titre axe y
+  xlab("Orientation de la boîte (°)")# Titre axe x
 
 g.improved
 ```
 
 Cette partie est descriptive: vous y décrivez vos résulats **sans les discuter**. Chaque tableau ou chaque graphique y est analysé **complètement** en y faisant référence. Par exemple, vous écrirez :
 
-*"On observe sur la Figure 1 que, en absence de NPA, le pivotement de la boîte à 90° provoque une courbure moyenne de `r format(bending[bending$position == "Courbe" & bending$npa == "Sans", "mean"], digits = 0)`°, mesurée après 24h, alors qu'elle est quasi nulle (`r format(bending[bending$position == "Debout" & bending$npa == "Sans", "mean"], digits = 0)`°), comme attendu, dans la condition témoin. L'ajout de NPA dans le milieu inhibe considérablement cette courbure qui n'est plus que de `r format(bending[bending$position == "Courbe" & bending$npa == "Avec", "mean"], digits = 0)`° pour les plantes subissant le stimulus gravitropique et `r format(bending[bending$position == "Debout" & bending$npa == "Avec", "mean"], digits = 0)`° pour les témoins."*
+*"On observe sur la Figure 1 que, en absence de NPA, le pivotement de la boîte à 90° provoque une courbure moyenne de `r format(bending[bending$position == "Courbe" & bending$NPA == "Sans", "mean"], digits = 0)`°, mesurée après 24h, alors qu'elle est moindre (`r format(bending[bending$Position == "Debout" & bending$NPA == "Sans", "mean"], digits = 0)`°), comme attendu, dans la condition témoin. L'ajout de NPA dans le milieu inhibe  cette courbure qui n'est plus que de `r format(bending[bending$Position == "Courbe" & bending$NPA == "Avec", "mean"], digits = 0)`° pour les plantes subissant le stimulus gravitropique et `r format(bending[bending$Position == "Debout" & bending$NPA == "Avec", "mean"], digits = 0)`° pour les témoins."*
 
 et non :
 
@@ -151,12 +152,9 @@ g.improved
 ```{r fig3_data1, echo=FALSE, fig.height=3, fig.width=5, fig.cap="**Le Titre de ma figure 3**. Les éléments complémentaires pour comprendre ma figure 3. Parfois tout un paragraphe... qui peut être très long et qui permet à la figure d'être *auto-portante*..."}
 # Mise en forme des données
 ## Calcul de la moyenne de longueur pour chaque jour et condition lumineuse
-mean.per.day  <- aggregate(longueur ~ jour + lumière, data1, "mean")
-colnames(mean.per.day) <- c("jour", "lumière", "mean")
-sd.per.day  <- aggregate(longueur ~ jour + lumière, data1, "sd")
-colnames(sd.per.day) <- c("jour", "lumière", "sd")
-
-data.per.day <- merge(mean.per.day, sd.per.day)
+data.per.day <- data1[,
+                      list(mean=mean(longueur), sd=sd(longueur)),
+                      by=list(jour, lumière)]
 
 # Définition des paramètres principaux du graphique
 g  <- ggplot(data = data.per.day, mapping = aes(x = jour, y = mean, color = lumière))
@@ -178,8 +176,7 @@ g.improved
 
 
 ```{r fig1_data3, echo=FALSE, fig.height=3, fig.width=5, fig.cap="**Le Titre de ma figure**. Les éléments complémentaires pour comprendre ma figure. Parfois tout un paragraphe... qui peut être très long et qui permet à la figure d'être *auto-portante*..."}
-data3   <- read.csv(file = "student3/data.csv", header = TRUE, sep = ",")
-data3$X <- NULL # suppression de la première colonne
+data3   <- fread(input = "student3/data.csv")
 data3$stimulus <- factor(data3$stimulus)  # transformation de cette donnée en 'facteurs' pour qu'elle soit
                                           # comprise par ggplot comme un paramètre de regroupement des données
 
@@ -209,9 +206,17 @@ g.improved
 
 
 ```{r fig1_data4, echo=FALSE, fig.height=3, fig.width=5, fig.cap="**Le Titre de ma figure**. Les éléments complémentaires pour comprendre ma figure. Parfois tout un paragraphe... qui peut être très long et qui permet à la figure d'être *auto-portante*..."}
-data4   <- read.csv(file = "student3/fulldata.csv", header = TRUE, sep = ",")
-data4$stimulus <- factor(data4$stimulus)  # transformation de cette donnée en 'facteurs' pour qu'elle soit
-                                          # comprise par ggplot comme un paramètre de regroupement des données
+# Il est parfois nécessaire de fixer le type des colonnes qui servent à trier 
+# ou regrouper les données sur 'factor'.
+# dans le cas présent si vous ne faites pas cela pour la colonne 'stimulus', elle ne pourra pas vous
+# servir à paramètrer la couleur des points via l'argument 'fill' de ggplot.
+# Une façon de faire est de fixer le type de colonne lors de la lecture 'fread' à l'aide de
+# l'argument 'colClasses'
+# Notez que ggplot2 considère automatiquement les types 'string' comme des facteurs, raison pour laquelle,
+# dans le cas présent, le problème se pose uniquement pour la colonne 'stimulus' dont les valeurs 0 et 90
+# sont considérés comme des 'numeric' (ce qu'ils sont) et non automatiquement interprétés comme des facteurs
+# par ggplot2.
+data4   <- fread(input = "student3/fulldata.csv", colClasses = c("factor", "factor", "factor", "factor", "numeric"))
 
 # Définition des paramètres principaux du graphique
 # Notez ici l'utilisation de l'argument 'group'
