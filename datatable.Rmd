@@ -103,12 +103,12 @@ library(ggplot2)
 # Main parameters of the plot: What are my x ? My y ? 
 # On which parameter do I distinguish my data series ?
 
-g  <- ggplot(data = my_summary, mapping = aes(x = Position, y = mean, fill = NPA))
+g  <- ggplot(data = my_summary, mapping = aes(x = Position, y = mean))
 
 # A 'basic' barplot + error bars
 g.basic <- g + 
   geom_errorbar(width=.25, aes(ymin=mean-sd, ymax=mean), position = position_dodge(0.9)) +
-  geom_bar(stat = "identity", position = position_dodge(), color = "black")
+  geom_bar(stat = "identity", position = position_dodge(), color = "black") + facet_grid(. ~ NPA)
 
 g.basic
 ```
@@ -120,8 +120,8 @@ g.improved <- g.basic +
   scale_x_discrete(labels=c("Gravitropic stimulus",
                             "No stimulus")) + # changing the x tick labels
   ylab("Gravitopric induced curvature (°)") + # The x axis title
-  xlab("") + # The x axis title
-  guides(fill=FALSE) # Hide the legend
+  xlab("") #+ # The x axis title
+  #guides(fill=FALSE) # Hide the legend
 
 g.improved
 ```
