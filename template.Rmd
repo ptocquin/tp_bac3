@@ -1,7 +1,8 @@
 ---
-title: "Untitled"
+title: "Rapport de Physiologie végétale"
+subtitle: "Mon sous-titre"
 author: "Pierre Tocquin"
-date: "10 mars 2016"
+date: "14 mars 2016"
 output:
   pdf_document:
       fig_caption: yes
@@ -21,13 +22,13 @@ library(data.table)
 
 L'introduction contient les éléments, étayés par la littérature scientifique, qui supportent la ou les hypothèses que vous allez évaluer par votre expérimentation. A ce titre, toute information doit être reliée à sa source, c'est à dire à une référence bibliographique.
 
-Ceci est une référence à 2 publications [@folta_light_2008; @symons_interactions_2003]
+Ceci est un exemple de référence à 2 publications [@petrasek_phytotropins_2003; @symons_interactions_2003]
 
 **Votre introduction sera concise mais devra permettre à ceux qui la lisent de comprendre (1) le contexte de votre travail, (2) les éléments concrets sur lesquels vous vous appuyez et qui vous amènent à (3) élaborer votre question/hypothèse.**
 
 # Matériel et méthodes
 
-Cette section décrit les conditions de votre expérimentation, ainsi que le matériel utilisé. L'idée générale est que, sur bases des informations fournies, il soit possible de reproduire exactement votre expérience. 
+Cette section décrit les conditions de votre expérimentation, ainsi que le matériel utilisé. **L'idée générale est que, sur bases des informations fournies, il soit possible de reproduire exactement votre expérience**. Pensez à structurer votre matériel et méthodes en considérant par exemple (1) le matériel végétal utilisé et les conditions de  culture, (2) votre dispositif expérimental et (3) les méthodes et outils utilisés pour l'analyse (y compris les éventuels logiciels utilisés).
 
 **Utilisez toujours un style concis ! Pas de bla-bla ! Voici des exemples extraits de [@jensen_auxin_1998] :**
 
@@ -40,10 +41,6 @@ Cette section décrit les conditions de votre expérimentation, ainsi que le mat
 # Résultats
 
 ```{r load_data, echo=FALSE, eval=TRUE}
-# Lecture des données csv, méthode de r-base
-# data1 <- read.table(file = "student1/resulat.csv", header = TRUE, sep = ",")
-# data2 <- read.table(file = "student2/Donneesgravitropisme - Copie.csv", header = TRUE, sep = ";")
-
 # Lecture des données csv, méthode data.table
 data1 <- fread(input = "student1/resulat.csv")
 data2 <- fread(input = "student2/gravi.csv")
@@ -51,23 +48,6 @@ data2 <- fread(input = "student2/gravi.csv")
 
 
 ```{r data1, echo=FALSE}
-## Mise en forme des données, méthode r-base ######################################################
-## Calcul de la différence de longueur entre le jour 0 et le jour 1
-# difference  <- aggregate(longueur ~ plante + lumière, data1, "diff")
-
-## Calcul de le moyenne et de l'écart-type de ces nouvelles données
-# sd             <- aggregate(longueur ~ lumière, difference, "sd")
-# colnames(sd)   <- c("lumière", "sd") # renommage des colonnes pour faciliter le 'merge' à venir
-# mean           <- aggregate(longueur ~ lumière, difference, "mean")
-# colnames(mean) <- c("lumière", "mean") # renommage des colonnes pour faciliter le 'merge' à venir
-
-## Création du tableau de synthèse moyenne & écart-type pour chaque condition de lumière
-## Les 2 tableaux à 'merger' ont une seule colonne en commun ('lumière'), la commande 'merge'
-## fonctionne donc de manière automatique en sélectionnant cette colonne pour fusionner les
-## 2 tableaux
-# data1.summarized <- merge(mean, sd)
-# head(data1.summarized)
-
 # Mise en forme des données, méthode data.table ###################################################
 data1.summarized <- data1[,
                           list(diff=longueur[jour==1]-longueur[jour==0]),
@@ -82,26 +62,15 @@ data2.summarized <- data2[time == 1,
 
 Le document comporte des exemples de figures que vous pouvez réaliser grâce au package `ggplot2`. Les codes vous sont fournis pour que vous puissiez vous en inspirer.
 
-```{r fig1_data2, echo=FALSE, fig.height=3, fig.width=5, fig.cap="**Le Titre de ma figure 1**. Les éléments complémentaires pour comprendre ma figure 1. Parfois tout un paragraphe... qui peut être très long et qui permet à la figure d'être *auto-portante*..."}
-## Mise en forme des données, méthode r-base ######################################################
-## Calcul de la direction de croissance au jour 1 et en fonction du traitement NPA et du stimulus
-# bending.mean  <- aggregate(angle-180 ~ Position + NPA, data2[data2$time == 1,], "mean")
-# colnames(bending.mean) <- c("Position", "NPA", "mean")
-# bending.sd  <- aggregate(angle-180 ~ Position + NPA, data2[data2$time == 1,], "sd")
-# colnames(bending.sd) <- c("Position", "NPA", "sd")
-# 
-# bending <- merge(bending.mean, bending.sd)
+```{r fig1_data2, echo=FALSE, fig.height=3, fig.width=5, fig.cap="**Le Titre de ma figure**. Les éléments complémentaires pour comprendre ma figure (par exemple l'explication des abbréviations utilisées, le nombre d'individus surlequel porte les moyennes/écart-types, ...). Parfois tout un paragraphe... qui peut être très long et qui permet à la figure d'être *auto-portante*..."}
 
-bending <- data2[time == 1, 
-                 list(mean=mean(angle-180), sd=sd(angle-180)),
-                 by=list(Position, NPA)]
 
 # Définition des paramètres principaux du graphique
-g  <- ggplot(data = bending, mapping = aes(x = Position, y = mean, fill = NPA))
+g  <- ggplot(data = data2.summarized, mapping = aes(x = Position, y = direction, fill = NPA))
 
 # Création du graphique
 g.basic <- g + 
-  geom_errorbar(width=.25, aes(ymin=mean-sd, ymax=mean),  # ajout des écart-types
+  geom_errorbar(width=.25, aes(ymin=direction-ecarttype, ymax=direction),  # ajout des écart-types
                 position=position_dodge(.9)) + # re-positionnement correct des barres d'erreur
   geom_bar(stat = "identity", position = position_dodge(), color = "black") # choix d'un barplot
 
@@ -119,7 +88,7 @@ g.improved
 
 Cette partie est descriptive: vous y décrivez vos résulats **sans les discuter**. Chaque tableau ou chaque graphique y est analysé **complètement** en y faisant référence. Par exemple, vous écrirez :
 
-*"On observe sur la Figure 1 que, en absence de NPA, le pivotement de la boîte à 90° provoque une courbure moyenne de `r format(bending[bending$position == "Courbe" & bending$NPA == "Sans", "mean"], digits = 0)`°, mesurée après 24h, alors qu'elle est moindre (`r format(bending[bending$Position == "Debout" & bending$NPA == "Sans", "mean"], digits = 0)`°), comme attendu, dans la condition témoin. L'ajout de NPA dans le milieu inhibe  cette courbure qui n'est plus que de `r format(bending[bending$Position == "Courbe" & bending$NPA == "Avec", "mean"], digits = 0)`° pour les plantes subissant le stimulus gravitropique et `r format(bending[bending$Position == "Debout" & bending$NPA == "Avec", "mean"], digits = 0)`° pour les témoins."*
+*"On observe sur la Figure 1 que, en absence de NPA, le pivotement de la boîte à 90° provoque une courbure moyenne de `r format(data2.summarized[data2.summarized$Position == "Courbe" & data2.summarized$NPA == "Sans", "direction"], digits = 0)`°, mesurée après 24h, alors qu'elle est moindre (`r format(data2.summarized[data2.summarized$Position == "Debout" & data2.summarized$NPA == "Sans", "direction"], digits = 0)`°), comme attendu, dans la condition témoin. L'ajout de NPA dans le milieu inhibe  cette courbure qui n'est plus que de `r format(data2.summarized[data2.summarized$Position == "Courbe" & data2.summarized$NPA == "Avec", "direction"], digits = 0)`° pour les plantes subissant le stimulus gravitropique et `r format(data2.summarized[data2.summarized$Position == "Debout" & data2.summarized$NPA == "Avec", "direction"], digits = 0)`° pour les témoins."*
 
 et non :
 
@@ -129,7 +98,7 @@ En effet, vous n'observez pas que le NPA inhibe le transport de l'auxine (c'est 
 
 Les figures 2 et 3 ci-après vous donnent d'autres exemples et codes de graphiques.
 
-```{r fig2_data1, echo=FALSE, fig.height=3, fig.width=5, fig.cap="**Le Titre de ma figure 2**. Les éléments complémentaires pour comprendre ma figure 2. Parfois tout un paragraphe... qui peut être très long et qui permet à la figure d'être *auto-portante*..."}
+```{r fig2_data1, echo=FALSE, fig.height=3, fig.width=5, fig.cap="**Le Titre de ma figure**. Les éléments complémentaires pour comprendre ma figure (par exemple l'explication des abbréviations utilisées, le nombre d'individus surlequel porte les moyennes/écart-types, ...). Parfois tout un paragraphe... qui peut être très long et qui permet à la figure d'être *auto-portante*..."}
 # Définition des paramètres principaux du graphique
 g  <- ggplot(data = data1.summarized, mapping = aes(x = lumière, y = mean, fill = lumière))
 
@@ -149,7 +118,7 @@ g.improved <- g.basic +
 g.improved
 ```
 
-```{r fig3_data1, echo=FALSE, fig.height=3, fig.width=5, fig.cap="**Le Titre de ma figure 3**. Les éléments complémentaires pour comprendre ma figure 3. Parfois tout un paragraphe... qui peut être très long et qui permet à la figure d'être *auto-portante*..."}
+```{r fig3_data1, echo=FALSE, fig.height=3, fig.width=5, fig.cap="**Le Titre de ma figure**. Les éléments complémentaires pour comprendre ma figure (par exemple l'explication des abbréviations utilisées, le nombre d'individus surlequel porte les moyennes/écart-types, ...). Parfois tout un paragraphe... qui peut être très long et qui permet à la figure d'être *auto-portante*..."}
 # Mise en forme des données
 ## Calcul de la moyenne de longueur pour chaque jour et condition lumineuse
 data.per.day <- data1[,
@@ -175,7 +144,7 @@ g.improved
 ```
 
 
-```{r fig1_data3, echo=FALSE, fig.height=3, fig.width=5, fig.cap="**Le Titre de ma figure**. Les éléments complémentaires pour comprendre ma figure. Parfois tout un paragraphe... qui peut être très long et qui permet à la figure d'être *auto-portante*..."}
+```{r fig1_data3, echo=FALSE, fig.height=3, fig.width=5, fig.cap="**Le Titre de ma figure**. Les éléments complémentaires pour comprendre ma figure (par exemple l'explication des abbréviations utilisées, le nombre d'individus surlequel porte les moyennes/écart-types, ...). Parfois tout un paragraphe... qui peut être très long et qui permet à la figure d'être *auto-portante*..."}
 data3   <- fread(input = "student3/data.csv")
 data3$stimulus <- factor(data3$stimulus)  # transformation de cette donnée en 'facteurs' pour qu'elle soit
                                           # comprise par ggplot comme un paramètre de regroupement des données
@@ -205,7 +174,7 @@ g.improved
 ```
 
 
-```{r fig1_data4, echo=FALSE, fig.height=3, fig.width=5, fig.cap="**Le Titre de ma figure**. Les éléments complémentaires pour comprendre ma figure. Parfois tout un paragraphe... qui peut être très long et qui permet à la figure d'être *auto-portante*..."}
+```{r fig1_data4, echo=FALSE, fig.height=3, fig.width=5, fig.cap="**Le Titre de ma figure**. Les éléments complémentaires pour comprendre ma figure (par exemple l'explication des abbréviations utilisées, le nombre d'individus surlequel porte les moyennes/écart-types, ...). Parfois tout un paragraphe... qui peut être très long et qui permet à la figure d'être *auto-portante*..."}
 # Il est parfois nécessaire de fixer le type des colonnes qui servent à trier 
 # ou regrouper les données sur 'factor'.
 # dans le cas présent si vous ne faites pas cela pour la colonne 'stimulus', elle ne pourra pas vous
