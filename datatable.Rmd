@@ -21,7 +21,7 @@ data <- fread(input = "student2/gravi.csv")
 head(data)
 ```
 
-`fread` is able (most of the time) to automatically identify the type and the layout of your data (separators, headers, ...).
+`fread` is able (most of the time) to automatically identify the type and the layout of your data (separators, headers, ...). If your data are encoded with a decimal separator other than the `.`, it is necessary to set the `dec` argument of `fread`: `data <- fread(input = "student2/gravi.csv", dec=",")`.
 
 ## Filtering and manipulating data
 
@@ -56,15 +56,53 @@ The *j* placeholder accepts a **list** of arguments, making possible multiple an
 ```{r multiple_data_manipulations}
 # data[Position == "Courbe", list(mean(angle), sd(angle))]
 # The same with direct renaming of the new columns
-data[Position == "Courbe", list(mean=mean(angle), sd=sd(angle))]
+data[Position == "Courbe",
+     list(mean=mean(angle), sd=sd(angle))]
 ```
+
+### '*On place*' update of `data.table` objects
+
+The `:=` operator can be used at the *j* placeholder to add, remove and update columns by reference. For exmaple, if you want to transform, in place, the angle values from degrees to radians, just use :
+
+```{r deg2rad}
+# Update the angle column with radian values 
+head(data[, angle := angle * (pi/180)])
+```
+
+Note that, by using the `:=` operator, you modify your original `data.table` object... even if you do not use explicitely the `<-` assignement operator, like in `data <- data[, angle := angle * (pi/180)]`.
+
+This operator can also be used to add a new column or remove an existing column:
+
+```{r, eval=FALSE}
+# reload the original file since previous commands modified the table
+data <- fread(input = "student2/gravi.csv")
+# add a column with radian values
+data[, rad := angle * (pi/180)]
+# remove the angle column
+data[, angle := NULL]
+```
+
+or in one operation:
+
+```{r}
+# reload the original file since previous commands modified the table
+data <- fread(input = "student2/gravi.csv")
+head(data[, c("rad", "angle") := list(angle * (pi/180), NULL)])
+# equivalent to
+# data[, `:=` (rad = angle * (pi/180), angle = NULL)])
+```
+
 
 ### Data grouping
 
 The third placeholder, *by*, is used to aggregate data before the manipulation by the *j* placeholder is performed. *by* accepts as argument a **list** of one or more column names.
 
 ```{r aggregation}
-data[Position == "Courbe", list(mean=mean(angle), sd=sd(angle)), by=list(NPA, time)]
+# reload the original file since previous commands modified the table
+data <- fread(input = "student2/gravi.csv")
+data[Position == "Courbe",
+     list(mean=mean(angle), sd=sd(angle)),
+     by=list(NPA, time)]
 ```
 
 ## Go-beyond example
@@ -103,12 +141,24 @@ library(ggplot2)
 # Main parameters of the plot: What are my x ? My y ? 
 # On which parameter do I distinguish my data series ?
 
-g  <- ggplot(data = my_summary, mapping = aes(x = Position, y = mean))
+g  <- ggplot(data = my_summary, mapping = aes(x = Position, y = mean, fill = NPA))
 
-# A 'basic' barplot + error bars
+# A 'basic' barplot + error bars 
+# (the 'fill' argument is used to produced grouped bars on the NPA data)
 g.basic <- g + 
   geom_errorbar(width=.25, aes(ymin=mean-sd, ymax=mean), position = position_dodge(0.9)) +
-  geom_bar(stat = "identity", position = position_dodge(), color = "black") + facet_grid(. ~ NPA)
+  geom_bar(stat = "identity", position = position_dodge(), color = "black")
+
+g.basic
+```
+
+```{r basic_plot2, fig.height=3, fig.width=5, fig.cap="**My basic faceted plot**."}
+# With the same data, rather than grouped bars, NPA data is used 
+# to separate the bar plot in 2 facets
+g.basic <- g + 
+  geom_errorbar(width=.25, aes(ymin=mean-sd, ymax=mean), position = position_dodge(0.9)) +
+  geom_bar(stat = "identity", position = position_dodge(), color = "black") +
+  facet_grid(. ~ NPA, labeller = labeller(NPA = c(Avec="+NPA",Sans="-NPA")))
 
 g.basic
 ```
@@ -117,11 +167,11 @@ g.basic
 # An improved plot
 g.improved <- g.basic +
   scale_fill_manual(values = c("orange","deepskyblue")) + # changing the colors
-  scale_x_discrete(labels=c("Gravitropic stimulus",
+  scale_x_discrete(labels=c("Gravitropic\nstimulus",
                             "No stimulus")) + # changing the x tick labels
-  ylab("Gravitopric induced curvature (°)") + # The x axis title
-  xlab("") #+ # The x axis title
-  #guides(fill=FALSE) # Hide the legend
+  ylab("Gravitropic induced curvature (°)") + # The x axis title
+  xlab("") + # The x axis title
+  guides(fill=FALSE) # Hide the legend
 
 g.improved
 ```
