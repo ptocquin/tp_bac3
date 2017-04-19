@@ -16,7 +16,7 @@ knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
 `data.table` is a package that extends the data.frame object of base R. It comes with its own functions to read (`fread`) and write (`fwrite`) tabulated data. Those replacement functions for `read.table` and `write.table` are incredibly easy to use and time/memory efficient.
 
 ```{r data.table}
-library(data.table)
+library(data.table) # Loading data.table package
 data <- fread(input = "student2/gravi.csv")
 head(data)
 ```
