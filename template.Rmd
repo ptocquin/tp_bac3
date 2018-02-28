@@ -2,7 +2,7 @@
 title: "Rapport de Physiologie végétale"
 subtitle: "Mon sous-titre"
 author: "Pierre Tocquin"
-date: "14 mars 2016"
+date: "24 février 2018"
 output:
   pdf_document:
       fig_caption: yes
@@ -30,184 +30,12 @@ Ceci est un exemple de référence à 2 publications [@petrasek_phytotropins_200
 
 Cette section décrit les conditions de votre expérimentation, ainsi que le matériel utilisé. **L'idée générale est que, sur bases des informations fournies, il soit possible de reproduire exactement votre expérience**. Pensez à structurer votre matériel et méthodes en considérant par exemple (1) le matériel végétal utilisé et les conditions de  culture, (2) votre dispositif expérimental et (3) les méthodes et outils utilisés pour l'analyse (y compris les éventuels logiciels utilisés).
 
-**Utilisez toujours un style concis ! Pas de bla-bla ! Voici des exemples extraits de [@jensen_auxin_1998] :**
-
-> Arabidopsis thaliana seeds were surface sterilized for 20 min in 20% (v/v) commercial bleach and 0.1% Triton X-100, rinsed four times with sterile, distilled water, and chilled for 2 d at 4°C. Sterile seeds were placed in square Petri plates on medium containing nutrient salts, 8 g/L 1 agar, and 10 g/L 1 Suc (Lincoln et al., 1990). ... All plants were ecotype Columbia unless stated otherwise. Petri plates were placed vertically and the seed- lings were grown at 22°C in darkness or in continuous light for 7 d. In experiments with the photoreceptor mutants, the seeds were given 16 h of white light to ensure germination before placement in the experimental light conditions. Seeds of the mutants analyzed in this study were obtained from in-house stocks or from the Arabidopsis Biological Resource Center (Ohio State University, Columbus). ...
-
-> **Light Sources**
-
-> White light at up to 150 mol.m^-2^ s^-1^ was obtained with mixed cool-white and warm-fluorescent light bulbs. Blue light up to 30 mol.m^-2^ s^-1^ was obtained by filtering light from a bank of cool-white fluorescent bulbs through blue plexiglass (no. 2424, Rohm and Hass, Darmstadt, Germany). Red and far-red light up to 30 mol.m^-2^ s^-1^ was provided by a solid-state light-emitting diode system (Qbeam 220, Quantum Devices, Barnevel, WI). Neutral- density screens were used to vary the fluence rates. Fluence rates of white, blue, and red light were measured with a quantum photometer (model LI-189, Li-Cor, Lincoln, NE) and fluence rates of far-red light were measured with a spectroradiometer (model LI-1800, Li-Cor).
+**Utilisez toujours un style concis ! Pas de bla-bla !**
 
 # Résultats
 
-```{r load_data, echo=FALSE, eval=TRUE}
-# Lecture des données csv, méthode data.table
-data1 <- fread(input = "student1/resulat.csv")
-data2 <- fread(input = "student2/gravi.csv")
-```
+Cette partie est descriptive: vous y décrivez vos résulats **sans les discuter**. Chaque tableau ou chaque graphique y est analysé **complètement** en y faisant référence.
 
-
-```{r data1, echo=FALSE}
-# Mise en forme des données, méthode data.table ###################################################
-data1.summarized <- data1[,
-                          list(diff=longueur[jour==1]-longueur[jour==0]),
-                          by=list(plante, lumière)][, 
-                                                    list(mean=mean(diff), sd=sd(diff)),
-                                                    by=lumière]
-
-data2.summarized <- data2[time == 1,
-                          list(direction=mean(angle-180), ecarttype=sd(angle-180)),
-                          by=list(Position, NPA)]
-```
-
-Le document comporte des exemples de figures que vous pouvez réaliser grâce au package `ggplot2`. Les codes vous sont fournis pour que vous puissiez vous en inspirer.
-
-```{r fig1_data2, echo=FALSE, fig.height=3, fig.width=5, fig.cap="**Le Titre de ma figure**. Les éléments complémentaires pour comprendre ma figure (par exemple l'explication des abbréviations utilisées, le nombre d'individus surlequel porte les moyennes/écart-types, ...). Parfois tout un paragraphe... qui peut être très long et qui permet à la figure d'être *auto-portante*..."}
-
-
-# Définition des paramètres principaux du graphique
-g  <- ggplot(data = data2.summarized, mapping = aes(x = Position, y = direction, fill = NPA))
-
-# Création du graphique
-g.basic <- g + 
-  geom_errorbar(width=.25, aes(ymin=direction-ecarttype, ymax=direction),  # ajout des écart-types
-                position=position_dodge(.9)) + # re-positionnement correct des barres d'erreur
-  geom_bar(stat = "identity", position = position_dodge(), color = "black") # choix d'un barplot
-
-# g.basic
-
-# Amélioration du graphique
-g.improved <- g.basic +
-  scale_fill_manual(values = c("deepskyblue", "orange")) + # re-définition des couleurs des barres
-  scale_x_discrete(labels=c("90°", "0°")) + # re-définition des étiquettes de l'axe x
-  ylab("Direction de croissance \npar rapport à l'axe vertical (°)") + # Titre axe y
-  xlab("Orientation de la boîte (°)")# Titre axe x
-
-g.improved
-```
-
-Cette partie est descriptive: vous y décrivez vos résulats **sans les discuter**. Chaque tableau ou chaque graphique y est analysé **complètement** en y faisant référence. Par exemple, vous écrirez :
-
-*"On observe sur la Figure 1 que, en absence de NPA, le pivotement de la boîte à 90° provoque une courbure moyenne de `r format(data2.summarized[data2.summarized$Position == "Courbe" & data2.summarized$NPA == "Sans", "direction"], digits = 0)`°, mesurée après 24h, alors qu'elle est moindre (`r format(data2.summarized[data2.summarized$Position == "Debout" & data2.summarized$NPA == "Sans", "direction"], digits = 0)`°), comme attendu, dans la condition témoin. L'ajout de NPA dans le milieu inhibe  cette courbure qui n'est plus que de `r format(data2.summarized[data2.summarized$Position == "Courbe" & data2.summarized$NPA == "Avec", "direction"], digits = 0)`° pour les plantes subissant le stimulus gravitropique et `r format(data2.summarized[data2.summarized$Position == "Debout" & data2.summarized$NPA == "Avec", "direction"], digits = 0)`° pour les témoins."*
-
-et non :
-
-*"On observe sur la Figure 1 que le NPA inhibe le transport de l'auxine et empêche la racine de répondre au stimulus gravitropique."*
-
-En effet, vous n'observez pas que le NPA inhibe le transport de l'auxine (c'est au contraire un élément connu de votre hypothèse), mais vous en observez les effets. Par ailleurs, cette dernière description n'assiste pas le lecteur dans le décriptage de la Figure 1...
-
-Les figures 2 et 3 ci-après vous donnent d'autres exemples et codes de graphiques.
-
-```{r fig2_data1, echo=FALSE, fig.height=3, fig.width=5, fig.cap="**Le Titre de ma figure**. Les éléments complémentaires pour comprendre ma figure (par exemple l'explication des abbréviations utilisées, le nombre d'individus surlequel porte les moyennes/écart-types, ...). Parfois tout un paragraphe... qui peut être très long et qui permet à la figure d'être *auto-portante*..."}
-# Définition des paramètres principaux du graphique
-g  <- ggplot(data = data1.summarized, mapping = aes(x = lumière, y = mean, fill = lumière))
-
-# Création du graphique de type 'barplot'
-g.basic <- g + 
-  geom_bar(stat = "identity", position = position_dodge()) + # choix d'un barplot
-  geom_errorbar(width=.25, aes(ymin=mean-sd, ymax=mean+sd)) # ajout des écart-types
-
-# Amélioration du graphique
-g.improved <- g.basic +
-  scale_fill_manual(values = c("white","blue", "black", "red", "darkred")) + # re-définition des couleurs des barres
-  scale_x_discrete(labels=c("Blanc", "450nm", "Obscurité", "660nm", "750nm")) + # re-définition des étiquettes de l'axe x
-  ylab("Croissance (cm/jour)") + # Titre axe y
-  xlab("Conditions lumineuses") + # Titre axe x
-  guides(fill=FALSE) # Suppression de la légende
-
-g.improved
-```
-
-```{r fig3_data1, echo=FALSE, fig.height=3, fig.width=5, fig.cap="**Le Titre de ma figure**. Les éléments complémentaires pour comprendre ma figure (par exemple l'explication des abbréviations utilisées, le nombre d'individus surlequel porte les moyennes/écart-types, ...). Parfois tout un paragraphe... qui peut être très long et qui permet à la figure d'être *auto-portante*..."}
-# Mise en forme des données
-## Calcul de la moyenne de longueur pour chaque jour et condition lumineuse
-data.per.day <- data1[,
-                      list(mean=mean(longueur), sd=sd(longueur)),
-                      by=list(jour, lumière)]
-
-# Définition des paramètres principaux du graphique
-g  <- ggplot(data = data.per.day, mapping = aes(x = jour, y = mean, color = lumière))
-
-# Création du graphique de type 'X-Y, lignes'
-g.basic <- g + 
-  geom_line() + # choix d'un graphique x/y de type ligne
-  geom_errorbar(width=.05, aes(ymin=mean-sd, ymax=mean+sd)) # ajout des écart-types
-
-# Amélioration du graphique
-g.improved <- g.basic +
-  scale_color_manual(values = c("white","blue", "black", "red", "darkred")) + # re-définition des couleurs des barres
-  scale_x_continuous(breaks = c(0,1)) + # re-définition des étiquettes de l'axe x
-  ylab("Croissance (cm/jour)") + # Titre axe y
-  xlab("Jours")
-
-g.improved
-```
-
-
-```{r fig1_data3, echo=FALSE, fig.height=3, fig.width=5, fig.cap="**Le Titre de ma figure**. Les éléments complémentaires pour comprendre ma figure (par exemple l'explication des abbréviations utilisées, le nombre d'individus surlequel porte les moyennes/écart-types, ...). Parfois tout un paragraphe... qui peut être très long et qui permet à la figure d'être *auto-portante*..."}
-data3   <- fread(input = "student3/data.csv")
-data3$stimulus <- factor(data3$stimulus)  # transformation de cette donnée en 'facteurs' pour qu'elle soit
-                                          # comprise par ggplot comme un paramètre de regroupement des données
-
-# Définition des paramètres principaux du graphique
-# Notez ici l'utilisation de l'argument 'group'
-g  <- ggplot(data = data3, mapping = aes(x = stimulus, y = mean, fill = traitement, group = traitement))
-
-# Création du graphique
-g.basic <- g + 
-  geom_errorbar(width=.25, aes(ymin=mean, ymax=mean+sd),  # ajout des écart-types
-                position=position_dodge(.9)) + # re-positionnement correct des barres d'erreur
-  geom_bar(stat = "identity", position = position_dodge(0.9), color = "black") # choix d'un barplot
-
-# Séparation du graphique en 2 panneaux sur base du génotype
-g.facet <- g.basic +
-  facet_grid(. ~ genotype, labeller = labeller(genotype = c(GUS = "WT", PIN = "pin3-4"))) # la paramètre labeller sert au renommage
-
-# Amélioration du graphique
-g.improved <- g.facet +
-  scale_fill_manual(values = c("blue","red"), name = "Traitement", labels = c("-NPA", "+NPA")) + # paramètres légende
-  scale_x_discrete(labels=c("90°C", "0°C")) + # re-définition des étiquettes de l'axe x
-  ylab("Courbure (°)") + # Titre axe y
-  xlab("Orientation de la boîte (°)") # 
-
-g.improved
-```
-
-
-```{r fig1_data4, echo=FALSE, fig.height=3, fig.width=5, fig.cap="**Le Titre de ma figure**. Les éléments complémentaires pour comprendre ma figure (par exemple l'explication des abbréviations utilisées, le nombre d'individus surlequel porte les moyennes/écart-types, ...). Parfois tout un paragraphe... qui peut être très long et qui permet à la figure d'être *auto-portante*..."}
-# Il est parfois nécessaire de fixer le type des colonnes qui servent à trier 
-# ou regrouper les données sur 'factor'.
-# dans le cas présent si vous ne faites pas cela pour la colonne 'stimulus', elle ne pourra pas vous
-# servir à paramètrer la couleur des points via l'argument 'fill' de ggplot.
-# Une façon de faire est de fixer le type de colonne lors de la lecture 'fread' à l'aide de
-# l'argument 'colClasses'
-# Notez que ggplot2 considère automatiquement les types 'string' comme des facteurs, raison pour laquelle,
-# dans le cas présent, le problème se pose uniquement pour la colonne 'stimulus' dont les valeurs 0 et 90
-# sont considérés comme des 'numeric' (ce qu'ils sont) et non automatiquement interprétés comme des facteurs
-# par ggplot2.
-data4   <- fread(input = "student3/fulldata.csv", colClasses = c("factor", "factor", "factor", "factor", "numeric"))
-
-# Définition des paramètres principaux du graphique
-# Notez ici l'utilisation de l'argument 'group'
-g  <- ggplot(data = data4, mapping = aes(x = stimulus, y = angle, fill = stimulus))
-
-# Création du graphique
-g.basic <- g + 
-  geom_dotplot(binaxis = "y", stackdir = "center", binwidth = 7) 
-
-# Séparation du graphique en panneaux sur base du génotype et du traitement
-g.facet <- g.basic +
-  facet_grid(. ~ Genotype + traitement, labeller = labeller(Genotype = c(GUS = "WT", PIN = "pin3-4"))) # la paramètre labeller sert au renommage
-
-# Amélioration du graphique
-g.improved <- g.facet +
-  scale_x_discrete(labels=c("90°C", "0°C")) + # re-définition des étiquettes de l'axe x
-  ylab("Courbure (°)") + # Titre axe y
-  xlab("Orientation de la boîte (°)") + # Titre axe x
-  guides(fill=FALSE) # Suppression de la légende
-
-g.improved
-```
 
 # Discussion et conclusion
 
