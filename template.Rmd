@@ -34,7 +34,41 @@ Cette section décrit les conditions de votre expérimentation, ainsi que le mat
 
 # Résultats
 
+```{r, echo=FALSE}
+# Lecture des données csv, méthode data.table
+data1 <- fread(input = "student1/resulat.csv")
+data2 <- fread(input = "student2/gravi.csv")
+
+# Mise en forme des données, méthode data.table ###################################################
+data1.summarized <- data1[,
+                          list(diff=longueur[jour==1]-longueur[jour==0]),
+                          by=list(plante, lumière)][, 
+                                                    list(mean=mean(diff), sd=sd(diff)),
+                                                    by=lumière]
+
+data2.summarized <- data2[time == 1,
+                          list(direction=mean(angle-180), ecarttype=sd(angle-180)),
+                          by=list(Position, NPA)]
+
+```
+
 Cette partie est descriptive: vous y décrivez vos résulats **sans les discuter**. Chaque tableau ou chaque graphique y est analysé **complètement** en y faisant référence.
+
+```{r, echo=FALSE, fig.height=3, fig.width=5, fig.cap="**Mon titre.** Voici une explication."}
+g  <- ggplot(data = data2.summarized, mapping = aes(x = Position, y = direction, fill = NPA))
+
+# Création du graphique
+g.basic <- g + 
+  # choix d'un barplot
+  geom_bar(stat = "identity", position = position_dodge(), color = "black") +
+  # ajout des écart-types
+  geom_errorbar(width=.25, aes(ymin=direction-ecarttype, ymax=direction),  
+  # re-positionnement correct des barres d'erreur
+                position=position_dodge(.9)) +
+  scale_y_continuous(breaks=c(-50,-25,0))
+g.basic
+```
+
 
 
 # Discussion et conclusion
